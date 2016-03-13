@@ -1,6 +1,3 @@
-#football
+#football-twitter
 
-Twitter app.
-
-#valoare
-#gainz
+Tracking people & discussions about football using Twitter API.
