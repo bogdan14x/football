@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  form(name="profile", method="post")
+        div.input
+            span.label search by profile
+            input(type="text", name="screen_name")
+        div.actions
+            input(type="submit", value="search")
+  div(name="result")
