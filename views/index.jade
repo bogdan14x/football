@@ -1,12 +1,27 @@
 extends layout
 
 block content
+  script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
+  script(src='/socket.io/socket.io.js')
   h1= title
   p Welcome to #{title}
-  form(name="profile", method="post")
-        div.input
-            span.label search by profile
-            input(type="text", name="screen_name")
-        div.actions
-            input(type="submit", value="search")
-  div(name="result")
+  div.input
+    span.label Track tweets by keyword
+    input(type="text", id="keyword")
+    div.actions
+    button(id="sendButton") GO
+  div(id="result")
+
+  script.
+    var socket = io();
+    $("#sendButton").click(function(){
+      var params = {keyword: $("#keyword").val()};
+      socket.emit('keyword', params);
+      var header = '<h2>Tweets containing <span class="keyword">'+params.keyword+'</span></h2>';
+      $('#result').append(header);
+    });
+
+    socket.on('tweet', function(data) {
+      var item = '<div>' + data.text + '</div>';
+      $('#result').append(item);
+    });

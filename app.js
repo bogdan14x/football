@@ -1,60 +1,48 @@
 var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-
-var routes = require('./routes/index');
-var users = require('./routes/users');
-
 var app = express();
+var path = require('path');
+var logger = require('morgan');
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+var router  = express.Router();
+var Twit = require('twit');
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+process.env['CONSUMER_KEY'] = "45L6FVra0MgX063EpMaa1bEpJ"
+process.env['CONSUMER_SECRET'] = "z3j3Ghy2JL91Fl9YaaxwOdCxQzvO9BtzoY4mDZWofB6Z0JD3Dw"
+process.env['ACCESS_TOKEN'] = "709029214138327041-dwkfJSROp56BaulXN02Elrx2lOK05CU"
+process.env['ACCESS_TOKEN_SECRET'] = "lVh9AZvoHGJMCRb5aRkBy4mSHDCrG3knZKBIHKIME15XR"
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+var T = new Twit({
+  consumer_key: process.env.CONSUMER_KEY,
+  consumer_secret: process.env.CONSUMER_SECRET,
+  access_token: process.env.ACCESS_TOKEN,
+  access_token_secret: process.env.ACCESS_TOKEN_SECRET,
+  timeout_ms: 60*1000
+});
+
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
+
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/users', users);
+server.listen(3000);
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+app.set('views', './views');
+app.set('view engine', 'jade');
+
+app.use('/', router);
+
+router.get('/', function (req, res) {
+  res.render('index', {title: 'TweetBall'});
 });
 
-// error handlers
+io.on('connection', function(socket) {
+  console.log('connected');
 
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.render('error', {
-      message: err.message,
-      error: err
-    });
-  });
-}
-
-// production error handler
-// no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-  res.status(err.status || 500);
-  res.render('error', {
-    message: err.message,
-    error: {}
+  socket.on('keyword', function(data) {
+    var stream = T.stream('statuses/filter', {track: data.keyword});
+    //console.log(data.keyword);
+    stream.on('tweet', function (tweet) {
+      socket.emit('tweet', {text: tweet.text});
+    })
   });
 });
-
-
-module.exports = app;
