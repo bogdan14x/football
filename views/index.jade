@@ -2,26 +2,16 @@ extends layout
 
 block content
   script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
-  script(src='/socket.io/socket.io.js')
+  script(src='/javascripts/query.js')
+  h4.status
   h1= title
-  p Welcome to #{title}
-  div.input
-    span.label Track tweets by keyword
-    input(type="text", id="keyword")
-    div.actions
-    button(id="sendButton") GO
-  div(id="result")
-
-  script.
-    var socket = io();
-    $("#sendButton").click(function(){
-      var params = {keyword: $("#keyword").val()};
-      socket.emit('keyword', params);
-      var header = '<h2>Tweets containing <span class="keyword">'+params.keyword+'</span></h2>';
-      $('#result').append(header);
-    });
-
-    socket.on('tweet', function(data) {
-      var item = '<div>' + data.text + '</div>';
-      $('#result').append(item);
-    });
+  .container
+    form(id="twitterForm")
+      span.label Query
+      input(type="text", id="query")
+      div
+        input(type='checkbox', id='dbOnly')
+        |  Query database only
+      div
+        input(type="submit" value="get tweets")
+    div(id="result")
