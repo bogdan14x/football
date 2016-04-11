@@ -103,7 +103,7 @@ $(document).ready(function() {
 			type: 'POST',
 			data: JSON.stringify(params),
       contentType: 'application/json',
-      url: 'http://localhost:3000/',
+      url: 'http://social-trackr-fit.herokuapp.com/',
       success: function(data) {
         console.log('success');
         //console.log(data);
