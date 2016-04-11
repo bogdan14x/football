@@ -1,12 +1,57 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+html, body {
+  padding: 0;
+  margin: 0;
+  height: 100%;
 }
 
 .blue {
   color: #00B7FF;
 }
 
-.status {
-  color: red;
+.tweet .name,.text {
+  vertical-align: middle;
+}
+
+.tweet .text {
+  padding-left: 5px;
+}
+
+.tweet img {
+  width: 25px;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.tweet .name {
+  font-weight: bold;
+}
+
+.dimmed {
+  position: relative;
+}
+
+.visible {
+  display: block !important;
+}
+
+.dimmed:after {
+  content: " ";
+  z-index: 10;
+  display: block;
+  position: absolute;
+  height: 500px;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+
+#overlay .fa-li {
+  display: none;
+  top: 50%;
+  left: 50%;
+  z-index: 999;
+  color: #fff;
+  font-size: 35px;
 }

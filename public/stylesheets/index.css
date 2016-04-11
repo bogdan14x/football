@@ -1,195 +1,104 @@
-
+@import url(https://fonts.googleapis.com/css?family=Catamaran);
 
 body {
   background-image: url("../img/img01.jpg");
-    /* Background image is centered vertically and horizontally at all times */
   background-position: center center;
-  
-  /* Background image doesn't tile */
   background-repeat: no-repeat;
-  
-  /* Background image is fixed in the viewport so that it doesn't move when 
-     the content's height is greater than the image's height */
   background-attachment: fixed;
-  
-  /* This is what makes the background image rescale based
-     on the container's size */
   background-size: cover;
 }
 
-h1 {
-   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
-   font-weight: 300;
-   color: white;
-   text-align: center;
+body {
+  font-family: Catamaran, sans-serif;
+}
+
+.img-wrap {
+  width: 100%;
+  height: 300px;
+  background-position: bottom center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .container-fluid{
-    width: 55%;
-    margin: auto;
-
-    min-height: 100%;  /* Fallback for vh unit */
-  min-height: 100vh; /* You might also want to use
-                        'height' property instead.
-                        
-                        Note that for percentage values of
-                        'height' or 'min-height' properties,
-                        the 'height' of the parent element
-                        should be specified explicitly.
-  
-                        In this case the parent of '.vertical-center'
-                        is the <body> element */
-
-  /* Make it a flex container */
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex; 
-  
-  /* Align the bootstrap's container vertically */
-    -webkit-box-align : center;
-  -webkit-align-items : center;
-       -moz-box-align : center;
-       -ms-flex-align : center;
-          align-items : center;
-  
-  /* In legacy web browsers such as Firefox 9
-     we need to specify the width of the flex container */
-  
-  
-  /* Also 'margin: 0 auto' doesn't have any effect on flex items in such web browsers
-     hence the bootstrap's container won't be aligned to the center anymore.
-  
-     Therefore, we should use the following declarations to get it centered again */
-         -webkit-box-pack : center;
-            -moz-box-pack : center;
-            -ms-flex-pack : center;
-  -webkit-justify-content : center;
-          justify-content : center;
-
-
-
+  height: 100%;
+  margin: 0 auto;
+  width: 40%;
 }
-
-
 
 .thumbnail {
-
-	width: 100%;
 	box-shadow: 0px 4px 10px #000000;
 	border-radius: 2px;
-	border-color: rgb(18,18,18);
+	border: 0;
 	padding: 0px;
-	margin-bottom: 0; /* Remove the default bottom margin of .jumbotron */
-
-
-
 }
 
-h3 {
-	/* The Social Tracker: */
-	font-family: GothamBook;
+.thumbnail .caption {
+  padding: 0;
+}
+
+.main-wrap {
+  padding: 20px 0;
+  max-height: 300px;
+}
+
+.overflow-fix {
+  overflow-y: scroll;
+}
+
+.vertical-center {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.main-title {
 	font-size: 1.750em;
 	color: #4A4A4A;
-	/*line-height: 26px;	*/
 	margin-left: 2%;
-  margin-top: 1%;
-	
 	margin-bottom: auto;
 }
 
 form.form-inline{
 	margin-bottom: 1%;
-	
-}
-
-input#inputPassword2.form-control{
-	
-	margin-left: 20%;
-	margin-right: auto;
-  width: 350%;
-	outline: none;
-  	border: none !important;
-    -webkit-box-shadow: none !important;
-    -moz-box-shadow: none !important;
-    box-shadow: none !important;
 }
 
 .btn.btn-primary {
 	background-color: transparent; /* Green */
-    border: none;
-    
-	/* GO: */
-	font-family: GothamMedium;
+  border: none;
 	font-size: 20px;
 	color: #4A4A4A;
 	line-height: 19px;
 	margin-right: 5%;
-
 }
 
-.form-control#inputPassword2{
-	background-color: transparent; /* Green */
-    border: none;
-
+hr {
+  margin: 5px 25px;
+  height: 2px;
+  border: 0;
+  border-top: 2px solid #9C9C9C;
 }
 
-.form-control::-webkit-input-placeholder { 
-	/* #Query: */
-	opacity: 0.5;
-	font-family: GothamLight;
-	font-size: 20px;
-	color: #3E606F;
-	line-height: 19px;
-  }
-.form-control:-moz-placeholder { 
-	/* #Query: */
-	opacity: 0.5;
-	font-family: GothamLight;
-	font-size: 20px;
-	color: #3E606F;
-	line-height: 19px;
-  }
-.form-control::-moz-placeholder { 
-	/* #Query: */
-	opacity: 0.5;
-	font-family: GothamLight;
-	font-size: 20px;
-	color: #3E606F;
-	line-height: 19px;
-  }
-.form-control:-ms-input-placeholder { 
-	/* #Query: */
-	opacity: 0.5;
-	font-family: GothamLight;
-	font-size: 20px;
-	color: #3E606F;
-	line-height: 19px;
-  }
-
-input{
-	font-family: GothamLight;
-	font-size: 20px;
-	line-height: 19px;
+.submit {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-weight: bold;
+  background-color: #fff;
+  font-size: 1.2em;
 }
 
-
-
-.hr1 {
-    border: none;
-    height: 1px;
-    /* Set the hr color */
-    color: #333; /* old IE */
-    background-color: #333; /* Modern Browsers */
-    width:90%;
-    margin-top: 1px;
-    opacity: 0.25;
-    border-width: 10px 0;
+input {
+	font-size: 20px;
+  border: 0;
+  margin: 10px 0;
+  outline: 0;
+  background: transparent;
+  width: 85%;
+  border-bottom: 2px solid rgb(229,229,229);
 }
 
-.twitter{
-	
+.twitter {
 	margin-bottom: 20px;
 	min-width: 10px;
 }
@@ -198,6 +107,11 @@ input{
   margin: auto;
 }
 
+.checkLabel {
+  position: absolute;
+  top: 5px;
+  right: 0;
+}
 
 /* ROUNDED TWO */
 
@@ -205,21 +119,26 @@ input[type=checkbox] {
   visibility: hidden;
 }
 
+.checkbox-wrap {
+  display: inline-block;
+  margin-bottom: 0;
+  vertical-align: middle;
+  padding: 5px 30px;
+}
+
 .roundedTwo, .roundedTwo2, .roundedTwo3 {
   width: 28px;
   height: 28px;
   background: #fcfff4;
-
-
-  
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfff4', endColorstr='#b3bead',GradientType=0 );
-  margin-left: 25%;
-  margin-bottom: 10%;
+  margin-bottom: 0;
   margin-top: auto;
-
   float:left;
-    
   position: relative;
+  vertical-align: middle;
+  top: -1px;
+  *overflow: hidden;
+  display: block;
 }
 
 .roundedTwo label, .roundedTwo2 label, .roundedTwo3 label {
@@ -227,24 +146,29 @@ input[type=checkbox] {
   position: absolute;
   width: 20px;
   height: 20px;
-
   -webkit-border-radius: 50px;
   -moz-border-radius: 50px;
   border-radius: 50px;
   left: 4px;
   top: 4px;
-
-
   -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
   -moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
   box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
-
   background: -webkit-linear-gradient(top, #222 0%, #45484d 100%);
   background: -moz-linear-gradient(top, #222 0%, #45484d 100%);
   background: -o-linear-gradient(top, #222 0%, #45484d 100%);
   background: -ms-linear-gradient(top, #222 0%, #45484d 100%);
   background: linear-gradient(top, #222 0%, #45484d 100%);
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222', endColorstr='#45484d',GradientType=0 );
+}
+
+.nav-tabs>li>a:hover {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.nav-tabs>li>a:hover .glyphicon {
+  color: #fff;
 }
 
 .roundedTwo label:after, .roundedTwo2 label:after, .roundedTwo3 label:after {
@@ -281,24 +205,111 @@ input[type=checkbox] {
   opacity: 1;
 }
 
-
-
 .Label{
   float: left;
-  margin-top: 1%;
-  margin-left: 2%;
-}
-
-#Label{
-  /* Top Users: */
-  font-family: GothamBook;
   font-size: 18px;
   color: #33373B;
   line-height: 24px;
   text-shadow: 0px 2px 0px #FFFFFF;
 }
 
+.badge {
+  background-color: #777;
+}
+
+.tabs-left { margin-top: 3rem; }
+
+.nav-tabs {
+  border-bottom: 0;
+  text-align: center;
+  background-color: rgba(0,0,0,0.5);
+  position: fixed;
+  width: 100%;
+}
+
+.glyphicon {
+  color: grey;
+}
 
 
+.active .glyphicon {
+  color: #fff;
+}
+
+.nav-tabs li {
+  margin: 0;
+  float: none;
+  display: inline-block;
+}
+
+.nav>li>a {
+  margin: 0 35px;
+}
+
+.nav-tabs a {
+  margin-right: 0;
+  border: 0;
+  background-color: transparent;
+}
+
+.nav-tabs a:hover {
+  color: #fff;
+}
 
 
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:hover, .nav-tabs>li.active>a:focus {
+  border:0;
+  background-color: transparent;
+}
+
+.status-wrap {
+  display: none;
+  position: absolute;
+  width: 100%;
+  color: #fff;
+  top: 10%;
+  z-index: 999;
+}
+
+.status {
+  background-color: rgba(0,0,0,0.75);
+  margin: 0 auto;
+  text-align: center;
+  width: 25%;
+  border-radius: 10px;
+  padding: 10px 20px;
+}
+
+.target {
+  height:100%;
+  flex-direction: column;
+  justify-content: center;
+  display: flex;
+}
+
+.tab-content {
+  height: 400px;
+
+  .tab-pane {
+    display: none;
+    background-color: #fff;
+    padding: 1.6rem;
+    overflow-y: auto;
+  }
+
+  .tab-pane .active { display: block;}
+}
+
+#search, #location, #users, #words, #tweets {
+  background-color: #fff !important;
+  min-height: 500px;
+  overflow-x: hidden;
+}
+
+.list-group {
+  width: 100%;
+}
+
+.list-group-item {
+  height: 50px;
+}

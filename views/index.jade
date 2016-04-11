@@ -1,61 +1,82 @@
 extends layout
 
 block content
-  script(src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js')
   script(src='/javascripts/query.js')
-  link(href='/stylesheets/bootstrap.min.css', rel='stylesheet')
   link(href='/stylesheets/index.css', rel='stylesheet')
-  
   head
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1')
     title The Social Tracker
-    // Bootstrap
-    
+
   body
-    .container-fluid
-      .row
-        // <div class="col-sm-6 col-md-4">
-        .thumbnail
-          img(src='/img/img02.jpg', alt='Laptop')
-          .caption
-            h3
-              | The Social Tracker 
-              img.twitter(src='/img/twitter.svg', alt='Twitter')
-            // <p><a href="#" class="btn btn-primary" role="button">Button</a> <a href="#" class="btn btn-default" role="button">Button</a></p>
-          form.form-inline
-            .form-group
-              label.sr-only(for='inputPassword2') Password
-              input#inputPassword2.form-control(type='text', placeholder='#Query')
-            button.btn.btn-primary.pull-right(type='submit') GO
-            hr.hr1
-          .row
-            .col-md-4
-              .roundedTwo
-                input#roundedTwo(type='checkbox', value='None', name='check')
-                label(for='roundedTwo')
-              .Label
-                p#Label
-                  | Top Users
-            .col-md-4
-              .roundedTwo
-                input#roundedTwo2(type='checkbox', value='None', name='check')
-                label(for='roundedTwo2')  
-              .Label
-                p#Label
-                  | Top Words
-            .col-md-4
-              .roundedTwo
-                input#roundedTwo3(type='checkbox', value='None', name='check')
-                label(for='roundedTwo3')
-              .Label
-                p#Label
-                  | Locations
-        // </div>
-    // jQuery (necessary for Bootstrap's JavaScript plugins)
-    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
-    // Include all compiled plugins (below), or include individual files as needed
-    script(src='js/bootstrap.min.js')
+    .status-wrap
+      .status
+    ul.nav.nav-tabs
+      li.active
+        a(href='#search', data-toggle='tab')
+          span.glyphicon.glyphicon-search
+      li
+        a(href='#tweets', data-toggle='tab')
+          span.glyphicon.glyphicon-list
+      li
+        a(href='#location', data-toggle='tab')
+          span.glyphicon.glyphicon-map-marker
+      li
+        a(href='#users', data-toggle='tab')
+          span.glyphicon.glyphicon-stats
+      li
+        a(href='#words', data-toggle='tab')
+          span.glyphicon.glyphicon-stats
 
-
+    .container.target
+      .row.target
+        .tab-content
+          #search.tab-pane.active
+            #overlay
+              i.fa-li.fa.fa-spinner.fa-spin
+              .img-wrap(style="background-image: url('../img/search.jpg');")
+              div.main-wrap
+                .main-title
+                  | The Social Tracker
+                  img.twitter(src='/img/twitter.svg', alt='Twitter')
+                form(id="twitterForm").text-center
+                  input(type='text', placeholder='#Query' id='query')
+                  button.submit(type='submit') GO
+              .row
+                .col-xs-12
+                  .checkbox-wrap
+                    .roundedTwo
+                      input#roundedTwo(type='checkbox', value='db_only', name='dbOnly')
+                      label(for='roundedTwo')
+                    .Label
+                      p#Label
+                        | Query database only
+          #tweets.tab-pane
+            .img-wrap(style="background-image: url('../img/results.jpg'); height: 200px; background-position: center center;")
+            div.main-wrap
+              .main-title
+                | Retrieved tweets
+              hr
+              #result(style="padding: 5px 30px;") Tweets will show up here once you perform a search.
+          #location.tab-pane
+            .img-wrap(style="background-image: url('../img/location.jpg'); height: 200px; background-position: center center;")
+            div.main-wrap
+              .main-title
+                | Tweets location
+              hr
+              #location-result(style="padding: 5px 30px;") Tweet locations will show up here once you perform a search.
+          #users.tab-pane
+            .img-wrap(style="background-image: url('../img/users.jpg'); height: 200px; background-position: center center;")
+            div.main-wrap
+              .main-title
+                | Most active users
+              hr
+              #user-result(style="padding: 5px 30px;") Top users will show up here once you perform a search.
+          #words.tab-pane
+            .img-wrap(style="background-image: url('../img/words.jpg'); height: 200px; background-position: center center;")
+            div.main-wrap
+              .main-title
+                | Most used words
+              hr
+              #word-result(style="padding: 5px 30px;") Top words will show up here once you perform a search.

@@ -12,6 +12,10 @@ var media = new Schema({
   display_url: String
 });
 
+var hashtag = new Schema({
+  text: String
+})
+
 var mentionedUser = new Schema({
   screen_name: String,
   name: String
@@ -26,6 +30,7 @@ var coords = new Schema({
   coords_lat: Number,
   coords_long: Number
 });
+
 
 var tweetLocation = new Schema({
   type: String,
@@ -44,7 +49,8 @@ var tweet = new Schema({
   urls: [url],
   mentioned_users: [mentionedUser],
   location: tweetLocation,
-  images: [media]
+  images: [media],
+  hashtags: [hashtag]
 });
 
 var Tweet = mongoose.model('Tweet', tweet);
