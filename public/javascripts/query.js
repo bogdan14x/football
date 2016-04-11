@@ -26,13 +26,11 @@ $(document).ready(function() {
       keywords.push(match[1].toLowerCase());
     }
 
-    //console.log(mentions);
-
     function renderTweets(data) {
       if(data) {
         $('#result').empty();
         $('#tweets .main-wrap').addClass('overflow-fix');
-        data.map((tweet) => {
+        data.map(function(tweet) {
           var result = '<div class="tweet"><img src='+tweet.author.profile_image_url+'/><span class="name">'+tweet.author.name+':</span><span class="text">'+tweet.text+'</span></div>';
           $('#result').append(result);
         });
@@ -87,7 +85,7 @@ $(document).ready(function() {
 
     function renderStatus(data) {
       $('.status').empty();
-      data.map((msg) => {
+      data.map(function(msg) {
         $('.status').append('<div>'+msg+'</div>');
       })
       $('.status-wrap').fadeIn('slow').delay(5000).fadeOut('slow');
