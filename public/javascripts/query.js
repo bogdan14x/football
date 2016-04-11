@@ -8,8 +8,6 @@ $(document).ready(function() {
 
     event.preventDefault();
 
-    const url = 'http://localhost:3000';
-
     var author = /author: ?@(\w+)(?!\w)/g, authors = [];
     var mention = /mention: ?@(\w+)(?!\w)/g, mentions = [];
     var tag = /#(\w+)(?!\w)/g, hashtags = [];

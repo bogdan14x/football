@@ -183,7 +183,7 @@ router.post('/', function(req, res, next) {
 
                   if(item.entities.user_mentions)
                     item.entities.user_mentions.map((user) => {
-                      mentioned_users.push({screen_name: user.screen_name, name: user.name});
+                      mentioned_users.push({screen_name: user.screen_name.toLowerCase(), name: user.name});
                     });
 
                   if(item.entities.media)
