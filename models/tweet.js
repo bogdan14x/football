@@ -7,13 +7,15 @@ var author = new Schema({
   profile_image_url: String
 });
 
-var media = new Schema({
-  img_url: String,
-  display_url: String
+var coords = new Schema({
+  coords_lat: Number,
+  coords_long: Number
 });
 
-var hashtag = new Schema({
-  text: String
+var tweetLocation = new Schema({
+  full_name: String,
+  country_code: String,
+  coordinates: [coords]
 })
 
 var mentionedUser = new Schema({
@@ -21,36 +23,16 @@ var mentionedUser = new Schema({
   name: String
 })
 
-var url = new Schema({
-  url: String,
-  expanded_url: String
-})
-
-var coords = new Schema({
-  coords_lat: Number,
-  coords_long: Number
-});
-
-
-var tweetLocation = new Schema({
-  type: String,
-  full_name: String,
-  country_code: String,
-  coordinates: [coords]
-})
 var tweet = new Schema({
   id_str: String,
   text: String,
   created_at: Date,
-  retweet_count: Number,
-  favorite_count: Number,
   source: String,
-  author: author,
-  urls: [url],
+  user: author,
   mentioned_users: [mentionedUser],
   location: tweetLocation,
-  images: [media],
-  hashtags: [hashtag]
+  hashtags: [String],
+  keywords: [String]
 });
 
 var Tweet = mongoose.model('Tweet', tweet);

@@ -1,5 +1,23 @@
 @import url(https://fonts.googleapis.com/css?family=Catamaran);
 
+@font-face {
+font-family: 'GothamLight';
+src:
+  url('../fonts/light.otf');
+}
+
+@font-face {
+font-family: 'Book';
+src:
+  url('../fonts/book.ttf');
+}
+
+@font-face {
+font-family: 'GothamMedium';
+src:
+  url('../fonts/medium.ttf');
+}
+
 body {
   background-image: url("../img/img01.jpg");
   background-position: center center;
@@ -14,16 +32,19 @@ body {
 
 .img-wrap {
   width: 100%;
-  height: 300px;
+  height: 280px;
   background-position: bottom center;
   background-repeat: no-repeat;
   background-size: cover;
 }
 
-.container-fluid{
-  height: 100%;
+.container-fluid {
   margin: 0 auto;
-  width: 40%;
+  font-family: Book;
+  max-width: 60%;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .thumbnail {
@@ -38,12 +59,12 @@ body {
 }
 
 .main-wrap {
-  padding: 20px 0;
+  padding: 2% 2% 0 2%;
   max-height: 300px;
 }
 
 .overflow-fix {
-  overflow-y: scroll;
+  overflow-y: hidden;
 }
 
 .vertical-center {
@@ -73,29 +94,35 @@ form.form-inline{
 }
 
 hr {
-  margin: 5px 25px;
-  height: 2px;
+  margin: 5px 15px;
   border: 0;
-  border-top: 2px solid #9C9C9C;
+  border-top: 1px solid #CCC;
+}
+
+.search {
+  margin: -5px auto;
+  width: 90%;
+  border: 0;
+  border-top: 1px solid #CCC;
 }
 
 .submit {
   margin: 0;
   padding: 0;
+  font-family: GothamMedium;
   border: 0;
-  font-weight: bold;
   background-color: #fff;
   font-size: 1.2em;
 }
 
 input {
-	font-size: 20px;
+	font-size: 15px;
   border: 0;
   margin: 10px 0;
+  font-family: GothamLight;
   outline: 0;
   background: transparent;
   width: 85%;
-  border-bottom: 2px solid rgb(229,229,229);
 }
 
 .twitter {
@@ -119,11 +146,15 @@ input[type=checkbox] {
   visibility: hidden;
 }
 
+.target {
+  box-shadow: 0px 4px 10px #000000;
+}
+
 .checkbox-wrap {
   display: inline-block;
   margin-bottom: 0;
   vertical-align: middle;
-  padding: 5px 30px;
+  padding: 24px 67px 0 67px;
 }
 
 .roundedTwo, .roundedTwo2, .roundedTwo3 {
@@ -280,15 +311,7 @@ input[type=checkbox] {
   padding: 10px 20px;
 }
 
-.target {
-  height:100%;
-  flex-direction: column;
-  justify-content: center;
-  display: flex;
-}
-
 .tab-content {
-  height: 400px;
 
   .tab-pane {
     display: none;
@@ -300,10 +323,14 @@ input[type=checkbox] {
   .tab-pane .active { display: block;}
 }
 
-#search, #location, #users, #words, #tweets {
+.gm-style-cc { display:none; }
+
+
+
+#search, #location, #users, #words, #tweets, #research-tool {
   background-color: #fff !important;
-  min-height: 500px;
-  overflow-x: hidden;
+  height: 454.44px;
+  overflow: hidden;
 }
 
 .list-group {

@@ -20,7 +20,7 @@ block content
         a(href='#tweets', data-toggle='tab')
           span.glyphicon.glyphicon-list
       li
-        a(href='#location', data-toggle='tab')
+        a(href='#location', data-toggle='tab', onclick="google.maps.event.trigger(map, 'resize');")
           span.glyphicon.glyphicon-map-marker
       li
         a(href='#users', data-toggle='tab')
@@ -28,8 +28,11 @@ block content
       li
         a(href='#words', data-toggle='tab')
           span.glyphicon.glyphicon-stats
+      li
+        a(href='#research-tool', data-toggle='tab')
+          span.glyphicon.glyphicon-trash
 
-    .container.target
+    .container-fluid
       .row.target
         .tab-content
           #search.tab-pane.active
@@ -43,6 +46,7 @@ block content
                 form(id="twitterForm").text-center
                   input(type='text', placeholder="author: @manutd mention: @arsenal #PremierLeague 'keyword'"  id='query')
                   button.submit(type='submit') GO
+                hr.search
               .row
                 .col-xs-12
                   .checkbox-wrap
@@ -50,7 +54,7 @@ block content
                       input#roundedTwo(type='checkbox', value='db_only', name='dbOnly')
                       label(for='roundedTwo')
                     .Label
-                      p#Label
+                      p#Label(style="margin: 1px 2px;")
                         | Query database only
           #tweets.tab-pane
             .img-wrap(style="background-image: url('../img/results.jpg'); height: 200px; background-position: center center;")
@@ -58,14 +62,15 @@ block content
               .main-title
                 | Retrieved tweets
               hr
-              #result(style="padding: 5px 30px;") Tweets will show up here once you perform a search.
+              #result(style="padding: 5px 30px;")
+                #result-tweets(style="padding-right: 10px;") Tweets will show up here once you perform a search.
           #location.tab-pane
             .img-wrap(style="background-image: url('../img/location.jpg'); height: 200px; background-position: center center;")
             div.main-wrap
               .main-title
                 | Tweets location
               hr
-              #location-result(style="padding: 5px 30px;") Tweet locations will show up here once you perform a search.
+              #location-result(style="padding: 5px 35px; height: 162px;")
           #users.tab-pane
             .img-wrap(style="background-image: url('../img/users.jpg'); height: 200px; background-position: center center;")
             div.main-wrap
@@ -80,3 +85,277 @@ block content
                 | Most used words
               hr
               #word-result(style="padding: 5px 30px;") Top words will show up here once you perform a search.
+          #research-tool.tab-pane
+            #search-overlay
+              i.fa-li.fa.fa-spinner.fa-spin
+              .img-wrap(style="background-image: url('../img/research.png');")
+              div.main-wrap
+                .main-title
+                  | Research Tool
+                .search-wrap(style="margin: 20px 0;")
+                  form(id="searchForm").text-center
+                    input(type='text', placeholder="Manchester United"  id='searchquery')
+                    button.submit(type='submit') GO
+                  hr.search
+    script.
+      var map;
+      function initMap() {
+        var darktheme = new google.maps.StyledMapType([
+            {
+                "featureType": "all",
+                "elementType": "labels.text",
+                "stylers": [
+                    {
+                        "visibility": "on"
+                    },
+                    {
+                        "invert_lightness": true
+                    },
+                    {
+                        "color": "#ffffff"
+                    }
+                ]
+            },
+            {
+                "featureType": "all",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                    {
+                        "saturation": 36
+                    },
+                    {
+                        "color": "#464646"
+                    },
+                    {
+                        "lightness": 40
+                    }
+                ]
+            },
+            {
+                "featureType": "all",
+                "elementType": "labels.text.stroke",
+                "stylers": [
+                    {
+                        "visibility": "on"
+                    },
+                    {
+                        "color": "#000000"
+                    },
+                    {
+                        "lightness": 16
+                    }
+                ]
+            },
+            {
+                "featureType": "all",
+                "elementType": "labels.icon",
+                "stylers": [
+                    {
+                        "visibility": "off"
+                    }
+                ]
+            },
+            {
+                "featureType": "administrative",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#000000"
+                    },
+                    {
+                        "lightness": 20
+                    }
+                ]
+            },
+            {
+                "featureType": "administrative",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "color": "#000000"
+                    },
+                    {
+                        "lightness": 17
+                    },
+                    {
+                        "weight": 1.2
+                    }
+                ]
+            },
+            {
+                "featureType": "landscape",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#000000"
+                    },
+                    {
+                        "lightness": 20
+                    }
+                ]
+            },
+            {
+                "featureType": "poi",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#000000"
+                    },
+                    {
+                        "lightness": 21
+                    }
+                ]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "geometry.fill",
+                "stylers": [
+                    {
+                        "color": "#000000"
+                    },
+                    {
+                        "lightness": 17
+                    }
+                ]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "geometry.stroke",
+                "stylers": [
+                    {
+                        "color": "#000000"
+                    },
+                    {
+                        "lightness": 29
+                    },
+                    {
+                        "weight": 0.2
+                    }
+                ]
+            },
+            {
+                "featureType": "road.arterial",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#000000"
+                    },
+                    {
+                        "lightness": 18
+                    }
+                ]
+            },
+            {
+                "featureType": "road.local",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#000000"
+                    },
+                    {
+                        "lightness": 16
+                    }
+                ]
+            },
+            {
+                "featureType": "transit",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#000000"
+                    },
+                    {
+                        "lightness": 19
+                    }
+                ]
+            },
+            {
+                "featureType": "water",
+                "elementType": "geometry",
+                "stylers": [
+                    {
+                        "color": "#000000"
+                    },
+                    {
+                        "lightness": 17
+                    }
+                ]
+            }
+        ])
+        map = new google.maps.Map(document.getElementById('location-result'), {
+          center: {lat: 55.37911, lng: -4.570312},
+          zoom: 2,
+          disableDefaultUI: true,
+          mapTypeControlOptions: {
+            mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'darktheme']
+          }
+        });
+        map.mapTypes.set('darktheme', darktheme);
+        map.setMapTypeId('darktheme');
+      }
+    script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyBrRJZEUbENOOTQpMTx3R3hWf30-i8g7fg&callback=initMap' async defer)
+    script.
+      $("#twitterForm").submit(function(event) {
+
+        event.preventDefault();
+
+        $("#overlay").addClass("dimmed");
+        $("#search-overlay .fa-li").toggle();
+
+        var params = getQueryData();
+        $.ajax({
+          type: 'POST',
+          data: JSON.stringify(params),
+          contentType: 'application/json',
+          url: 'http://localhost:3000/',
+          success: function(data) {
+            console.log('success');
+
+            $('#query').val("");
+
+            renderStatus(data[0]);
+            if(params.query != -1) {
+              renderTweets(data[1]);
+              renderWords(data[2]);
+              renderUsers(data[3]);
+              renderLocations(data[4]);
+            }
+            //console.log(data);
+          },
+          complete: function() {
+            $("#overlay").removeClass("dimmed");
+            $("#search-overlay .fa-li").toggle();
+          }
+        });
+      });
+    script.
+      $("#searchForm").submit(function(event) {
+
+        event.preventDefault();
+
+        $("#search-overlay").addClass("dimmed");
+        $(".fa-li").toggle();
+
+        var query = $('#searchquery').val();
+        //console.log(query);
+        var params = {query: query, research: true};
+
+        $.ajax({
+          type: 'POST',
+          data: JSON.stringify(params),
+          contentType: 'application/json',
+          url: 'http://localhost:3000/research',
+          success: function(data) {
+            console.log('success');
+
+            $('#query').val("");
+
+            console.log('ai scris: '+data);
+          },
+          complete: function() {
+            $("#overlay").removeClass("dimmed");
+            $(".fa-li").toggle();
+          }
+        });
+
+      });

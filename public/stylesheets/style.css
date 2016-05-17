@@ -12,6 +12,18 @@ html, body {
   vertical-align: middle;
 }
 
+#result, #word-result, #user-result {
+  font-family: GothamLight;
+  overflow: auto;
+  height: 195px;
+  width: 105%;
+}
+
+#location-result {
+  display: block;
+  margin: 16px 16px 0 16px;
+}
+
 .tweet .text {
   padding-left: 5px;
 }
@@ -24,6 +36,12 @@ html, body {
 
 .tweet .name {
   font-weight: bold;
+}
+
+.tweet-date {
+  text-align: right;
+  color: grey;
+  width: 100%;
 }
 
 .dimmed {
@@ -47,10 +65,10 @@ html, body {
 }
 
 
-#overlay .fa-li {
+.tab-pane .fa-li {
   display: none;
-  top: 50%;
-  left: 50%;
+  top: 48%;
+  left: 46%;
   z-index: 999;
   color: #fff;
   font-size: 35px;
