@@ -130,7 +130,7 @@ router.post('/research', function(req, res, next) {
     'PREFIX dbpedia2: <http://dbpedia.org/property/> '+
     'PREFIX dbpedia: <http://dbpedia.org/> '+
     'PREFIX dbo: <http://dbpedia.org/ontology/> '+
-    ' SELECT ?f ?clubname ?abstract ?manager ?ground ?name ?pos ?bd ?thumb'+
+    ' SELECT ?f ?clubname ?abstract ?manager ?ground ?name ?pos ?bd ?thumb ?stadium_desc ?manthumb ?stadium_thumb'+
     ' WHERE {'+
     '?f rdf:type dbo:SoccerClub . '+
     '?f dbpedia2:clubname ?clubname . '+
@@ -138,177 +138,217 @@ router.post('/research', function(req, res, next) {
     '?f dbpedia2:ground ?ground . '+
     '?f dbo:abstract ?abstract . '+
     '?f dbo:manager ?manager . '+
+    '?manager dbo:thumbnail ?manthumb . '+
     '?name dbo:position ?pos . '+
     '?name dbo:birthDate ?bd . '+
-    '?name dbo:thumbnail ?thumb ' +
-    'FILTER (regex (?clubname, "'+req.body.query+'", "i") && (langMatches(lang(?abstract),"en"))) }';
+    '?name dbo:thumbnail ?thumb . ' +
+    '?ground dbo:abstract ?stadium_desc . ' +
+    '?ground dbo:thumbnail ?stadium_thumb ' +
+    'FILTER (regex (?clubname, "'+req.body.query+'", "i") && (langMatches(lang(?abstract),"en")) && (langMatches(lang(?stadium_desc),"en"))) }';
 
   var dbpedia = new SparqlClient(endpoint);
 
-  dbpedia.query(sparq).bind('team', '<http://dbpedia.org/resource/Manchester_United_F.C.>').execute(function(error, results) {
-    console.log(util.inspect(results, null, 20, true)+"\n");
-  });
+  dbpedia.query(sparq).execute(function(error, data) {
 
-  res.send('plm');
+    if(data.results.bindings.length > 0) {
+      var clubname = data.results.bindings[0].clubname.value;
+      var abstract = data.results.bindings[0].abstract.value;
+      var manager = data.results.bindings[0].manager.value;
+      var manager_thumb = data.results.bindings[0].manthumb.value;
+      manager = manager.match(/([A-Z])\w+[a-zA-Z0-9 -]/g);
+      var ground = data.results.bindings[0].ground.value;
+      ground = ground.match(/([A-Z])\w+[a-zA-Z0-9 -]/g);
+
+      var stadium_desc = data.results.bindings[0].stadium_desc;
+      var stadium_thumb = data.results.bindings[0].stadium_thumb;
+
+      var players = [];
+      data.results.bindings.map(function(item) {
+        var player_name = item.name.value;
+        player_name = player_name.match(/([A-Z])\w+[a-zA-Z0-9 -]/g);
+        var position = item.pos.value;
+        console.log(item);
+        position = position.match(/([A-Z])\w+[a-zA-Z0-9 -]/g);
+        var bd = item.bd.value;
+        var thumb = item.thumb.value;
+
+        players.push({name: String(player_name).replace(/_/g, " "), position: String(position).replace(/_/g, " "), birthdate: bd, picture: thumb});
+      })
+
+      res.send({clubname: clubname, abstract: abstract, manager: String(manager).replace(/_/g, " "), ground: String(ground).replace(/_/g, " "), players: players, stadium_desc: stadium_desc, stadium_thumb: stadium_thumb, manthumb: manager_thumb});
+    } else {
+      res.send(["Not found"]);
+    }
+  });
 })
 
 router.post('/', function(req, res, next) {
   var status = [];
 
   if(req.body.query == -1) {
-    status.push('Query can only have AND or OR');
+    status.push('Invalid query');
     res.send([status]);
   }
   else {
     var query = '';
     var data = {};
-
-    if(req.body.authors.length > 0) {
-      //data['authors'] = req.body.authors;
-      req.body.authors.map(function(item, index) {
-        query += `from:${item} `;
-      })
-    }
-    if(req.body.mentions.length > 0)
-      //data['mentioned'] = req.body.mentions;
-      req.body.mentions.map(function(item, index) {
-        query += `@${item} `;
-      })
-    if(req.body.hashtags.length > 0)
-      //data['hashtags'] = req.body.hashtags;
-      req.body.hashtags.map(function(item, index) {
-        query += `#${item} `;
-      })
-    if(req.body.keywords.length > 0)
-      //data['keywords'] = req.body.keywords;
-      req.body.keywords.map(function(item, index) {
-        query += `${item} `;
-      })
-
-    var options = {};
+    var options = [];
 
     // Get authors from query
     if(req.body.authors.length > 0)
-      options['user.screen_name'] = {$in: req.body.authors};
+      options.push({'user.screen_name': {$in: req.body.authors}});
 
     // Get mentioned users from query
     if(req.body.mentions.length > 0)
       if(req.body.query == 0)
-        options['mentioned_users.screen_name'] = {$in: req.body.mentions};
-      else {
-        options['mentioned_users.screen_name'] = {$all: req.body.mentions};
+        options.push({'mentioned_users': {$in: req.body.mentions}});
+      else if(req.body.query == 1) {
+        options.push({'mentioned_users': {$all: req.body.mentions}});
       }
-
+    console.log('query is '+req.body.query);
     // Get hashtags from query
     if(req.body.hashtags.length > 0)
       if(req.body.query == 0)
-        options['hashtags'] = {$in: req.body.hashtags};
+        options.push({'hashtags': {$in: req.body.hashtags}});
       else if(req.body.query == 1) {
-        options['hashtags'] = {$all: req.body.hashtags};
+        options.push({'hashtags': {$all: req.body.hashtags}});
       }
 
     // Get keywords from query
     if(req.body.keywords.length > 0)
       if(req.body.query == 0)
-        options['keywords'] = {$in: req.body.keywords};
+        options.push({'keywords': {$in: req.body.keywords}});
       else if(req.body.query == 1) {
-        options['keywords'] = {$all: req.body.keywords};
+        options.push({'keywords': {$all: req.body.keywords}});
       }
 
-    query = query.trim();
+    if(Object.getOwnPropertyNames(options).length == 0) {
+      status.push('Invalid query');
+      res.send([status]);
+    } else {
 
-    if(req.body.query == 0) {
-      query = query.replace(/ /g , " OR ");
-      var params = options;
-    }
-    else {
-      query = query.replace(/ /g , " AND ");
-      var params = {$and: [options]};
-    }
-
-    console.log(options);
-
-    //console.log(removeWords('the sugi pula the'));
-    Tweet.find(params).lean().sort({id_str: -1}).exec(function(err, tweets) {
-
-      var final_tweets = [];
-
-      if(tweets.length > 0) {
-        console.log('Found '+tweets.length+' in database.');
-        if(!req.body.dbOnly)
-          console.log('Fetching tweets newer than '+tweets[0].id_str);
-        tweets.map(function(item) {
-          final_tweets.push(item);
-          // console.log(item.text);
-          // console.log("ID is "+item.id_str);
+      if(req.body.authors.length > 0)
+        req.body.authors.map(function(item, index) {
+          query += `from:${item} `;
         })
-        var twitter_params = { q: query, count: 300, lang: "en-gb", since_id: tweets[0].id_str };
+      if(req.body.mentions.length > 0)
+        req.body.mentions.map(function(item, index) {
+          query += `@${item} `;
+        })
+      if(req.body.hashtags.length > 0)
+        req.body.hashtags.map(function(item, index) {
+          query += `#${item} `;
+        })
+      if(req.body.keywords.length > 0)
+        req.body.keywords.map(function(item, index) {
+          query += `${item} `;
+        })
+
+      query = query.trim();
+
+      if(req.body.query == 1) {
+        query = query.replace(/ /g , " AND ");
+        var params = {$and: options};
       }
       else {
-        var twitter_params = { q: query, count: 300, lang: "en-gb" };
-        console.log('No tweets found in database.')
-        if(!req.body.dbOnly)
-          console.log('Fetching all.');
+        query = query.replace(/ /g , " OR ");
+        var params = {$or: options};
       }
 
-      if(!req.body.dbOnly) {
+      console.log(params);
 
-        client.get('search/tweets', twitter_params, function(err, data, response) {
-          if(err) throw err;
+      Tweet.find(params).lean().exec(function(err, tweets) {
 
-          var tweets = JSON.parse(response.body).statuses;
-          //console.log(util.inspect(tweets,  { showHidden: true, depth: null }));
-          //console.log(tweets[0]);
-
-          var count = 0;
-
-          tweets.map((item) => {
+        var final_tweets = [];
+        //console.log(tweets);
+        if(tweets.length > 0) {
+          console.log('Found '+tweets.length+' in database.');
+          if(!req.body.dbOnly)
+            console.log('Fetching tweets newer than '+tweets[0].id_str);
+          tweets.map(function(item) {
             final_tweets.push(item);
-            var mentioned_users = [];
-            var tags = [];
+            // console.log(item.text);
+            // console.log("ID is "+item.id_str);
+          })
+          var twitter_params = { q: query, count: 300, lang: "en-gb", since_id: tweets[0].id_str };
+        }
+        else {
+          var twitter_params = { q: query, count: 300, lang: "en-gb" };
+          console.log('No tweets found in database.')
+          if(!req.body.dbOnly)
+            console.log('Fetching all.');
+        }
 
-            if(item.entities.user_mentions)
-              item.entities.user_mentions.map((user) => {
-                mentioned_users.push({screen_name: user.screen_name.toLowerCase(), name: user.name});
+        if(!req.body.dbOnly) {
+
+          client.get('search/tweets', twitter_params, function(err, data, response) {
+            if(err) throw err;
+
+            var tweets = JSON.parse(response.body).statuses;
+            //console.log(util.inspect(tweets,  { showHidden: true, depth: null }));
+            //console.log(tweets[0]);
+
+            var count = 0;
+
+            tweets.map((item) => {
+              final_tweets.push(item);
+              var mentioned_users = [];
+              var tags = [];
+
+              if(item.entities.user_mentions)
+                item.entities.user_mentions.map((user) => {
+                  mentioned_users.push(user.screen_name.toLowerCase());
+                });
+
+              if(item.entities.hashtags)
+                item.entities.hashtags.map((tag) => {
+                  var txt = tag.text;
+                  var txt = txt.toLowerCase();
+                  tags.push(txt);
+                });
+
+              //console.log(stripText(item.text));
+              var tweet = new Tweet({
+                id_str: item.id_str,
+                text: item.text,
+                created_at: item.created_at,
+                source: item.source,
+                user: {
+                  screen_name: item.user.screen_name.toLowerCase(),
+                  name: item.user.name,
+                  profile_image_url: item.user.profile_image_url
+                },
+                mentioned_users: mentioned_users,
+                location: item.place?{
+                  full_name: item.place.full_name,
+                  country_code: item.place.country_code,
+                  coordinates: item.place.bounding_box.coordinates[0]
+                }:null,
+                hashtags: tags,
+                keywords: stripText(item.text)
               });
-
-            if(item.entities.hashtags)
-              item.entities.hashtags.map((tag) => {
-                var txt = tag.text;
-                var txt = txt.toLowerCase();
-                tags.push(txt);
+              //console.log(util.inspect(item,  { showHidden: true, depth: null }));
+              tweet.save(function(err) {
+                if (err) {
+                  console.log(err);
+                }
+                //console.log('saved '+count);
               });
-
-            //console.log(stripText(item.text));
-            var tweet = new Tweet({
-              id_str: item.id_str,
-              text: item.text,
-              created_at: item.created_at,
-              source: item.source,
-              user: {
-                screen_name: item.user.screen_name.toLowerCase(),
-                name: item.user.name,
-                profile_image_url: item.user.profile_image_url
-              },
-              mentioned_users: mentioned_users,
-              location: item.place?{
-                full_name: item.place.full_name,
-                country_code: item.place.country_code,
-                coordinates: item.place.bounding_box.coordinates[0]
-              }:null,
-              hashtags: tags,
-              keywords: stripText(item.text)
+              count += 1;
             });
-            //console.log(util.inspect(item,  { showHidden: true, depth: null }));
-            tweet.save(function(err) {
-              if (err) {
-                console.log(err);
-              }
-              //console.log('saved '+count);
-            });
-            count += 1;
-          });
 
+            var users = getMostActive(final_tweets);
+            var keywds = users[2];
+            var active = [];
+            users[0].map((author) => {
+              active.push(getWordFrequency(flatten(keywds[author])));
+            })
+            status.push('Retrieved '+final_tweets.length+' tweets');
+
+            console.log("Added "+count+" entries to database");
+            res.send([status, final_tweets, getFrequency(final_tweets), [active, users[0], users[1]], getPlaces(final_tweets)]);
+          })
+        } else {
           var users = getMostActive(final_tweets);
           var keywds = users[2];
           var active = [];
@@ -316,184 +356,11 @@ router.post('/', function(req, res, next) {
             active.push(getWordFrequency(flatten(keywds[author])));
           })
           status.push('Retrieved '+final_tweets.length+' tweets');
-
-          console.log("Added "+count+" entries to database");
           res.send([status, final_tweets, getFrequency(final_tweets), [active, users[0], users[1]], getPlaces(final_tweets)]);
-        })
-      } else {
-        var users = getMostActive(final_tweets);
-        var keywds = users[2];
-        var active = [];
-        users[0].map((author) => {
-          active.push(getWordFrequency(flatten(keywds[author])));
-        })
-        status.push('Retrieved '+final_tweets.length+' tweets');
-        res.send([status, final_tweets, getFrequency(final_tweets), [active, users[0], users[1]], getPlaces(final_tweets)]);
-      }
-    })
-
+        }
+      })
+    }
   }
-
-
-  //if(req.body.authors.length > 0) {
-
-
-
-
-    /*
-    if(req.body.dbOnly) {
-      console.log('db only');
-      var active = [];
-      console.log(options);
-      Tweet.find(options).lean().exec(function(err, tweets) {
-        if (err) throw err;
-
-        function sendIt() {
-          status.push(tweets.length+' tweets found in DB');
-          console.log(util.inspect(tweets,  { showHidden: true, depth: null }));
-          res.send([tweets, status, getFrequency(tweets), [active, users[0], users[1]]]);
-        }
-        // get most active users
-        var users = getMostActive(tweets);
-        var keywds = users[2];
-        start(sendIt);
-        function start(callback) {
-          //console.log('enter');
-          users[0].map((author) => {
-            active.push(getWordFrequency(flatten(keywds[author])));
-          })
-          callback();
-        }
-      });
-    }
-
-    else {
-      var id_list = [];
-
-      async.each(req.body.authors,
-        function(screen_name, callback) {
-          Tweet.find({'author.screen_name': screen_name}).sort({'_id': 1}).lean().limit(1).exec(function(err, tweet) {
-            if (err) throw err;
-
-            if(tweet.length > 0) {
-              id_list[screen_name] = {screen_name: screen_name, since_id: tweet[0].id_str, new_tweets: true, count: 150};
-            } else {
-              id_list[screen_name] = {screen_name: screen_name, new_tweets: false, count: 150};
-            }
-
-            callback();
-          })
-        },
-        function(err) {
-          var tasks = [];
-          req.body.authors.forEach(function(screen_name) {
-            tasks.push(function(callback) {
-              client.get('statuses/user_timeline', id_list[screen_name], function(err, data, response) {
-                if(err) {
-                  status.push(err[0].message);
-                  callback(null);
-                  return null;
-                }
-
-                data.map((item) => {
-                  var urls = [];
-                  var mentioned_users = [];
-                  var imgs = [];
-                  var tags = [];
-
-                  if(item.entities.urls)
-                    item.entities.urls.map((url) => {
-                      urls.push({url: url.url, expanded_url: url.expanded_url});
-                    });
-
-                  if(item.entities.user_mentions)
-                    item.entities.user_mentions.map((user) => {
-                      mentioned_users.push({screen_name: user.screen_name.toLowerCase(), name: user.name});
-                    });
-
-                  if(item.entities.media)
-                    item.entities.media.map((image) => {
-                      imgs.push({img_url: image.media_url, display_url: image.display_url});
-                    });
-
-                  if(item.entities.hashtags)
-                    item.entities.hashtags.map((tag) => {
-                      var txt = tag.text;
-                      var txt = txt.toLowerCase();
-                      tags.push({text: txt});
-                    });
-
-                  //console.log(stripText(item.text));
-                  var tweet = new Tweet({
-                    id_str: item.id_str,
-                    text: item.text,
-                    created_at: item.created_at,
-                    retweet_count: item.retweet_count,
-                    favorite_count: item.favorite_count,
-                    source: item.source,
-                    author: {
-                      screen_name: item.user.screen_name.toLowerCase(),
-                      name: item.user.name,
-                      profile_image_url: item.user.profile_image_url
-                    },
-                    urls: urls,
-                    mentioned_users: mentioned_users,
-                    location: item.place?{
-                      type: item.place.place_type,
-                      full_name: item.place.full_name,
-                      country_code: item.place.country_code,
-                      coordinates: item.place.bounding_box.coordinates[0]
-                    }:null,
-                    images: imgs,
-                    hashtags: tags
-                  });
-                  //console.log(util.inspect(item,  { showHidden: true, depth: null }));
-                  tweet.save(function(err) {
-                    if (err) {
-                      console.log(err);
-                    }
-                    //console.log('saved '+count);
-                    //count += 1;
-                  });
-                });
-                status.push((id_list[screen_name].new_tweets)?
-                  ((data.length > 0)?('added '+data.length+' NEW tweets for user @'+screen_name):('no new tweets for user @'+screen_name)):
-                  ('user @'+screen_name+' now has '+ data.length+' tweets in the DB'));
-                //console.log(status);
-                callback(null, data);
-              });
-            })
-          })
-
-          //console.log(util.inspect(tasks,  { showHidden: true, depth: null }));
-          async.parallel(tasks, function(err, data) {
-            var active = [];
-            //var flat = flatten(data);
-            console.log(data.length);
-            Tweet.find(options).lean().exec(function(err, tweets) {
-
-              var users = getMostActive(tweets);
-              //console.log(tweets);
-              if(users != null) {
-                var keywds = users[2];
-                users[0].map((author) => {
-                  active.push(getWordFrequency(flatten(keywds[author])));
-                })
-              }
-              //status.push(tweets.length+' tweets retrieved in total');
-
-              res.send([tweets, status, getFrequency(tweets), [active, users[0], users[1]]]);
-
-            })
-
-            //console.log(flatten(data));
-          })
-        }
-      );
-    }
-    */
-  //}
-  //else { status.push('nothing happened'); res.send([[], status]); }
 });
 
 module.exports = router;

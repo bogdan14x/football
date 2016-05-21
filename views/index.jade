@@ -10,27 +10,48 @@ block content
     title The Social Tracker
 
   body
+    .modal.fade.team-description(tabindex='-1', role='dialog')
+      .modal-dialog.modal-sm(style="width: 61%; height: 454px;")
+        .modal-content(style="height: 100%; opacity: 0.9;")
+          button.close(type='button', data-dismiss='modal') ×
+          | Description
+          hr(style="margin: 5px 0;")
+          .modal-desc(style="opacity: 1; padding: 20px 30px; text-align: justify; height: 360px; overflow: auto; font-family: GothamLight; font-size: 15px;")
+    .modal.fade.team-stadium(tabindex='-1', role='dialog')
+      .modal-dialog.modal-sm(style="width: 61%; height: 454px;")
+        .modal-content(style="height: 100%; opacity: 0.9;")
+          button.close(type='button', data-dismiss='modal') ×
+          | Stadium
+          hr(style="margin: 5px 0;")
+          .modal-stadium(style="opacity: 1; padding: 20px 30px; text-align: justify; height: 360px; overflow: auto; font-family: GothamLight; font-size: 15px;")
+    .modal.fade.team-players(tabindex='-1', role='dialog')
+      .modal-dialog.modal-sm(style="width: 61%; height: 454px;")
+        .modal-content(style="height: 100%; opacity: 0.9;")
+          button.close(type='button', data-dismiss='modal') ×
+          | Manager and Players
+          hr(style="margin: 5px 0;")
+          .modal-players(style="opacity: 1; padding: 20px 15px; text-align: justify; height: 360px; overflow: auto; font-family: GothamLight; font-size: 18px;")
     .status-wrap
       .status
     ul.nav.nav-tabs
       li.active
         a(href='#search', data-toggle='tab')
-          span.glyphicon.glyphicon-search
+          span.i.fa.fa-search(aria-hidden='true')
       li
         a(href='#tweets', data-toggle='tab')
-          span.glyphicon.glyphicon-list
+          span.i.fa.fa-at(aria-hidden='true')
       li
-        a(href='#location', data-toggle='tab', onclick="google.maps.event.trigger(map, 'resize');")
-          span.glyphicon.glyphicon-map-marker
+        a(href='#location', data-toggle='tab')
+          span.i.fa.fa-location-arrow(aria-hidden='true')
       li
         a(href='#users', data-toggle='tab')
-          span.glyphicon.glyphicon-stats
+          span.i.fa.fa-user(aria-hidden='true')
       li
         a(href='#words', data-toggle='tab')
-          span.glyphicon.glyphicon-stats
+          span.i.fa.fa-pencil(aria-hidden='true')
       li
         a(href='#research-tool', data-toggle='tab')
-          span.glyphicon.glyphicon-trash
+          span.i.fa.fa-futbol-o(aria-hidden='true')
 
     .container-fluid
       .row.target
@@ -44,7 +65,7 @@ block content
                   | The Social Tracker
                   img.twitter(src='/img/twitter.svg', alt='Twitter')
                 form(id="twitterForm").text-center
-                  input(type='text', placeholder="author: @manutd mention: @arsenal #PremierLeague 'keyword'"  id='query')
+                  input(type='text', placeholder="author: @manutd OR mention: @arsenal OR #PremierLeague OR 'keyword'"  id='query')
                   button.submit(type='submit') GO
                 hr.search
               .row
@@ -88,15 +109,24 @@ block content
           #research-tool.tab-pane
             #search-overlay
               i.fa-li.fa.fa-spinner.fa-spin
-              .img-wrap(style="background-image: url('../img/research.png');")
+              .img-wrap#research-img(style="background-image: url('../img/research.png');")
+                .research-title Manchester United
               div.main-wrap
-                .main-title
+                .main-title-research
                   | Research Tool
                 .search-wrap(style="margin: 20px 0;")
                   form(id="searchForm").text-center
-                    input(type='text', placeholder="Manchester United"  id='searchquery')
+                    input(type='text', placeholder="Manchester United" id='searchquery')
                     button.submit(type='submit') GO
                   hr.search
+                hr.research-hr
+                .row.buttonRow
+                  .col-sm-4
+                    button.btn.btn-default(data-toggle="modal" data-target=".team-description") Description
+                  .col-sm-4
+                    button.btn.btn-default(data-toggle="modal" data-target=".team-players") Team
+                  .col-sm-4
+                    button.btn.btn-default(data-toggle="modal" data-target=".team-stadium") Stadium
     script.
       var map;
       function initMap() {
@@ -295,6 +325,10 @@ block content
       }
     script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyBrRJZEUbENOOTQpMTx3R3hWf30-i8g7fg&callback=initMap' async defer)
     script.
+      $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        google.maps.event.trigger(map, 'resize');
+      });
+    script.
       $("#twitterForm").submit(function(event) {
 
         event.preventDefault();
@@ -349,11 +383,15 @@ block content
             console.log('success');
 
             $('#query').val("");
-
-            console.log('ai scris: '+data);
+            if(data.clubname) {
+              renderTeam(data);
+              $('#research-img').css('background-image','url(img/team.png)');
+            } else {
+              renderStatus(data);
+            }
           },
           complete: function() {
-            $("#overlay").removeClass("dimmed");
+            $("#search-overlay").removeClass("dimmed");
             $(".fa-li").toggle();
           }
         });

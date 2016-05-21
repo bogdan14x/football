@@ -19,32 +19,39 @@ function getQueryData() {
   while (match = keyword.exec(query)) {
     keywords.push(match[1].toLowerCase());
   }
-  var str_or = query.indexOf(' OR ');
-  var str_and = query.indexOf(' AND ');
+  var str_or = (query.match(/OR/g) || []).length;
+  var str_and = (query.match(/AND/g) || []).length;
   var result = -2;
-  if(str_or > 0 && str_and < 0)
+
+  if(str_or > 0 && str_and <= 0)
     result = 0;
-  if(str_and > 0 && str_or < 0)
+  if(str_and > 0 && str_or <= 0)
     result = 1;
-  if(str_and >= 0 && str_or >= 0)
+  if(str_and > 0 && str_or > 0)
     result = -1;
-  if(str_and < 0 && str_or < 0)
+  if(str_and <= 0 && str_or <= 0)
     result = 0;
 
+  var query_elements = keywords.length + authors.length + mentions.length + hashtags.length;
+  if(str_or == 0 && str_and != query_elements - 1)
+    result = -1;
+  if(str_and == 0 && str_or != query_elements - 1)
+    result = -1;
 
   return {keywords: keywords, authors: authors, hashtags: hashtags, mentions: mentions, dbOnly: dbOnly, query: result};
 }
 
 
 function renderLocations(data) {
-  data.map(function(location) {
-    console.log(location);
-    var marker = new google.maps.Marker({
-      position: {lat: location[1], lng: location[0]},
-      map: map,
-      icon: '/img/marker.png'
-    });
-  })
+  if(data)
+    data.map(function(location) {
+      console.log(location);
+      var marker = new google.maps.Marker({
+        position: {lat: location[1], lng: location[0]},
+        map: map,
+        icon: '/img/marker.png'
+      });
+    })
 }
 
 function renderTweets(data) {
@@ -111,6 +118,49 @@ function renderStatus(data) {
     $('.status').append('<div>'+msg+'</div>');
   })
   $('.status-wrap').fadeIn('slow').delay(5000).fadeOut('slow');
+}
+
+function renderTeam(data) {
+
+  $('.research-title').html('<strong>'+data.clubname+'</strong>');
+  $('.research-title').css('display', 'block');
+  $('.main-title-research').html('Details');
+  $('.search-wrap').css('display', 'none');
+  $('.buttonRow').css('display', 'block');
+  $('.research-hr').css('display', 'block');
+  $('.modal-desc').html(data.abstract);
+  $('.modal-stadium').html(data.stadium_desc.value);
+  $('.modal-stadium').append('<div class="stadium-img"></div>');
+  $('.stadium-img').css('background-image', 'url('+data.stadium_thumb.value+')');
+
+  //console.log(data.manthumb);
+
+  $('.modal-players').append('<div class="col-sm-6">' +
+    '<div class="media-left media-middle">'+
+      `<div class="player-img" style="background-image: url('${data.manthumb}')"></div>`+
+    '</div>'+
+    '<div class="media-body">'+
+      '<p style="font-family: GothamLight;">'+data.manager+'</p>'+
+      '<p style="font-family: Book;">Manager</p>'+
+    '</div>'+
+  '</div>');
+
+  data.players.map(function(item) {
+    var name = '<p style="font-family: GothamLight;">'+item.name+'</p>';
+    var position = '<p style="font-family: Book;">'+item.position+'</p>';
+    var bd = '<p style="font-family: GothamMedium;">'+item.birthdate+'</p>';
+    var picture = `<div class="player-img" style="background-image: url('${item.picture}')"></div>`;
+    var player = `<div class="col-sm-6" style="display: flex;"><div>${name}${position}${bd}</div>${picture}</div>`;
+    var entry = '<div class="col-sm-6">' +
+      '<div class="media-left media-middle">'+
+        picture +
+      '</div>'+
+      '<div class="media-body">'+
+        name+position+bd+
+      '</div>'+
+    '</div>';
+    $('.modal-players').append(entry);
+  })
 }
 
 //console.log(authors);

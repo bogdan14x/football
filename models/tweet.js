@@ -29,7 +29,7 @@ var tweet = new Schema({
   created_at: Date,
   source: String,
   user: author,
-  mentioned_users: [mentionedUser],
+  mentioned_users: [String],
   location: tweetLocation,
   hashtags: [String],
   keywords: [String]
